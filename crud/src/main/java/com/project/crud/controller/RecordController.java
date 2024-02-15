@@ -1,24 +1,46 @@
 package com.project.crud.controller;
 
 import com.project.crud.entity.Record;
+import com.project.crud.entity.Zone;
 import com.project.crud.service.RecordService;
+import com.project.crud.service.ZoneService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/records")
+@RequestMapping("/records")
 public class RecordController {
 
     @Autowired
     private RecordService recordService;
+    private ZoneService zoneService;
 
-    @PostMapping
-    public ResponseEntity<Record> createRecord(@RequestBody Record record) {
+
+    @PostMapping("/create")
+    public ResponseEntity<Record> createRecord(@RequestBody Map<String, String> requestMap) {
+        String recordName = requestMap.get("recordName");
+        String zoneName = requestMap.get("zoneName");
+        String ip = requestMap.get("ip");
+
+        Zone zone = zoneService.getZoneByName(zoneName);
+        if (zone == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Record record = new Record();
+        record.setRecordName(recordName);
+        record.setZone(zone);
+        record.setIP(ip);
+        
         Record createdRecord = recordService.saveRecord(record);
-        return ResponseEntity.status(201).body(createdRecord);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdRecord);
     }
 
     @PutMapping("/{recordName}/{zoneName}")
@@ -33,7 +55,7 @@ public class RecordController {
             return ResponseEntity.notFound().build();
         }
 
-        // Update the properties you want to change
+
         existingRecord.setRecordName(updatedRecord.getRecordName());
         existingRecord.setIP(updatedRecord.getIP());
 

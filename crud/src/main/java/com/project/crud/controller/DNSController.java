@@ -26,14 +26,22 @@ public class DNSController {
     @GetMapping("/{input}")
     public ResponseEntity<?> getIP(@PathVariable String input) {
 
-        String[] parts = input.split("\\.");
-
-        if (parts.length != 2) {
-            return ResponseEntity.badRequest().body("Invalid input format. Use recordName.zoneName");
+            int lastDotIndex = input.lastIndexOf(".");
+        
+        if (lastDotIndex == -1 || lastDotIndex == 0 || lastDotIndex == input.length() - 1) {
+            return ResponseEntity.badRequest().body("Invalid input format. Use recordName.domainName");
         }
 
-        String recordName = parts[0];
-        String zoneName = parts[1];
+        int secondLastDotIndex = input.lastIndexOf(".", lastDotIndex - 1);
+
+        if (secondLastDotIndex == -1) {
+            return ResponseEntity.badRequest().body("Invalid input format. Use recordName.domainName");
+        }
+
+        String recordName = input.substring(secondLastDotIndex + 1, lastDotIndex);
+        String zoneName = input.substring(lastDotIndex + 1);
+
+
 
         Zone zone = zoneService.getZoneByName(zoneName);
 
