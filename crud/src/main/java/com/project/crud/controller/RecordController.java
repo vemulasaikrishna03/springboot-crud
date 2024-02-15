@@ -26,7 +26,7 @@ public class RecordController {
     public ResponseEntity<Record> createRecord(@RequestBody Map<String, String> requestMap) {
         String recordName = requestMap.get("recordName");
         String zoneName = requestMap.get("zoneName");
-        String ip = requestMap.get("ip");
+        String ip = requestMap.get("IP");
 
         Zone zone = zoneService.getZoneByName(zoneName);
         if (zone == null) {
