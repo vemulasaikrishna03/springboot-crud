@@ -10,14 +10,14 @@ import com.project.crud.service.ZoneService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.view.RedirectView;
-import org.springframework.web.util.UriComponentsBuilder;
+
 
 @RestController
 @RequestMapping("")
@@ -30,7 +30,8 @@ public class DNSController {
     private ZoneService zoneService;
 
    @GetMapping("/{input}")
-    public Object getIP(@PathVariable String input) {
+   @Cacheable(value = "recordCache", key = "#input")
+    public ResponseEntity<?> getIP(@PathVariable String input) {
 
 
           int i = 0;

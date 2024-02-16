@@ -22,7 +22,7 @@ public class ZoneController {
         return ResponseEntity.ok(zones);
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public ResponseEntity<Zone> createZone(@RequestBody Zone zone) {
         Zone createdZone = zoneService.saveZone(zone);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdZone);
