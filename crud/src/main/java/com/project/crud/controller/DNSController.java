@@ -6,12 +6,18 @@ import com.project.crud.entity.Record;
 import com.project.crud.entity.Zone;
 import com.project.crud.service.RecordService;
 import com.project.crud.service.ZoneService;
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("")
@@ -23,23 +29,32 @@ public class DNSController {
     @Autowired
     private ZoneService zoneService;
 
-    @GetMapping("/{input}")
-    public ResponseEntity<?> getIP(@PathVariable String input) {
+   @GetMapping("/{input}")
+    public Object getIP(@PathVariable String input) {
 
-            int lastDotIndex = input.lastIndexOf(".");
+
+          int i = 0;
+          String zoneName = "";
+          int idx = 1;
+  
+          for (int j = input.length() - 1; j >= 0; j--) {
+              char currentChar = input.charAt(j);
+  
+              if (currentChar == '.') {
+                  i++;
+              }
+  
+              if (i == 2) {
+                  break;
+              }
+  
+              zoneName = currentChar + zoneName;
+              idx++;
+          }
+  
+          String recordName = input.substring(0, input.length()-idx);
         
-        if (lastDotIndex == -1 || lastDotIndex == 0 || lastDotIndex == input.length() - 1) {
-            return ResponseEntity.badRequest().body("Invalid input format. Use recordName.domainName");
-        }
-
-        int secondLastDotIndex = input.lastIndexOf(".", lastDotIndex - 1);
-
-        if (secondLastDotIndex == -1) {
-            return ResponseEntity.badRequest().body("Invalid input format. Use recordName.domainName");
-        }
-
-        String recordName = input.substring(secondLastDotIndex + 1, lastDotIndex);
-        String zoneName = input.substring(lastDotIndex + 1);
+        System.out.println(recordName+zoneName);
 
 
 
@@ -55,7 +70,16 @@ public class DNSController {
             return ResponseEntity.notFound().build();
         }
 
-  
+        
         return ResponseEntity.ok(record.getIP());
+
+        // String ipAddress=record.getIP();
+
+
+        //  UriComponentsBuilder builder = UriComponentsBuilder.fromUriString("http://" + ipAddress);
+
+        // return new RedirectView(builder.toUriString());
+
+
     }
 }

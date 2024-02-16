@@ -19,6 +19,7 @@ public class RecordController {
 
     @Autowired
     private RecordService recordService;
+    @Autowired
     private ZoneService zoneService;
 
 
